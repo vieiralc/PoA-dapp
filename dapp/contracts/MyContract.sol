@@ -7,27 +7,27 @@ contract MyContract {
     event userUpdated(address _addr, string newEmail);
 
     // estrutura para manter dados
-    // do usuario
+    // do usuário
     struct User {
         string email;
     }
 
-    // mapea endereco do usuario
+    // mapea endereço do usuário
     // a sua estrutura
     mapping (address => User) users;
 
-    // funcao para cadastrar/atualizar
-    // a conta do usuario
+    // função para cadastrar/atualizar
+    // a conta do usuário
     function setUser(address _addr, string memory _email) public {
         User storage user = users[_addr];
         user.email = _email;
 
-        // notifica o cliente atraves do evento
+        // notifica o cliente através do evento
         emit userUpdated(_addr, "Conta atualizada!");
     }
 
-    // funcao para resgatar
-    // dados do usuario
+    // função para resgatar
+    // dados do usuário
     function getUser(address _addr) public view returns(string memory) {
         User memory user = users[_addr];
         return (user.email);
