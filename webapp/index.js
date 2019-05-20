@@ -176,28 +176,47 @@ app.post('/register', async function(req, res) {
         let setAccountNameResponse = await axios.post(httpEndpoint, setAccountNameRequest, { 'headers': headers });
         console.log("Account name setup status: %s", JSON.stringify(setAccountNameResponse.data.result));
 
-        return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
+        //return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
 
-        // // unlock account to register the e-mail
-        // let unlockResponse = await web3.eth.personal.unlockAccount(accountAddress, pass, null);
-        // console.log("*** Unlock response ***", unlockResponse);
-        // if (unlockResponse) {
+        // Desbloqueia a conta do usuário para salvar seus dados
+        // Ex: email
+        let unlockResponse = await web3.eth.personal.unlockAccount(accountAddress, pass, null);
+        console.log("*** Unlock response ***", unlockResponse);
 
-        //     MyContract.methods.setUser(accountAddress, "email@gmail.com")
-        //         .send({ from: accountAddress, gas: 3000000 })
-        //         .then(function(result) {
-        //             console.log("*** Usuário registrado ***");
-        //             return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
-        //         })
-        //         .catch(function (error) {
-        //             console.log("+++ Erro ao salvar e-mail +++");
-        //             console.log(error);
-        //             return res.send({ 'error': true, 'msg': 'Erro ao criar e-mail.'});
-        //         })
-        // }
+        if (unlockResponse) {
+
+            // tranfere 1 ether para a conta do usuário
+            let sendFundsResponse = await web3.eth.sendTransaction({
+                from: "0x00a1103c941fc2e1ef8177e6d9cc4657643f274b",
+                gasPrice: "20000000000",
+                gas: "21000",
+                to: accountAddress,
+                value: "0xDE0B6B3A7640000"
+            }, "node00");
+
+            console.log("*** sendFundsResponse ***", sendFundsResponse);
+
+            if (sendFundsResponse) {
+                MyContract.methods.setUser(accountAddress, "email@gmail.com")
+                .send({ from: accountAddress, gas: 3000000 })
+                .then(function(result) {
+                    console.log("*** Usuário registrado ***");
+                    return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
+                })
+                .catch(function (error) {
+                    console.log("+++ Erro ao salvar e-mail +++");
+                    console.log(error);
+                    return res.send({ 'error': true, 'msg': 'Erro ao criar e-mail.'});
+                })
+            } else {
+                return res.send({ 'error': true, 'msg': 'Erro ao transferir fundos.'});
+            }
+
+        } else {
+            return res.send({ 'error': true, 'msg': 'Erro ao desbloquear a conta.'});
+        }
 
     } catch (error) {
-
         console.log("Account name setup failed: %s", error);
         return res.send({ 'error': true, 'msg': error });
     }
