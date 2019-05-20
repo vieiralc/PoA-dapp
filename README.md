@@ -5,7 +5,7 @@ Os softwares necessários para rodar o app são:
 <ol>
     <li> Nodejs/npm: https://nodejs.org/en/</li>
     <li> Truffle Framework (Para fazer deploy e testes do smart contract)</li>
-    <li> https://curl.haxx.se/ (Para enviar requisições ao parity pelo terminal) </li>
+    <li> Curl https://curl.haxx.se/ (Para enviar requisições ao parity pelo terminal) </li>
 </ol>
 
 Após instalar o Nodejs: <br>
