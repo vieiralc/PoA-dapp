@@ -14,6 +14,8 @@ function register(event) {
     // previne a página de ser recarregada
     event.preventDefault();
 
+    $('#load').attr('disabled', 'disabled');
+
     // resgata os dados do formulário
     let username = $("#username").val();
     let password = $("#password").val();
@@ -27,7 +29,7 @@ function register(event) {
         if (!res.error) {
             window.location.href="/";
         } else {
-            alert("Erro ao criar sua conta. Por favor, tente novamente mais tarde");
+            alert("Erro ao criar sua conta. Por favor, tente novamente mais tarde. " + res.msg);
         }
 
     })
