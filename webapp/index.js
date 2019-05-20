@@ -11,10 +11,10 @@ const headers = { 'Content-Type': 'application/json' }
 
 const allAccountsInfoRequest = { "method": "parity_allAccountsInfo", "params": [], "id": 1, "jsonrpc": "2.0" };
 
-//const contract_abi = require("../build/contracts/MyContract.json");
-//const contractAdress = "0x5B6a6Df167cb5DA753fa0eB5BA27f7cbA34f4524";
+const contract_abi = require("../dapp/build/contracts/MyContract.json");
+const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
 
-//const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
+const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
 
 const app = express();
 
@@ -153,31 +153,26 @@ app.post('/register', async function(req, res) {
     // cria requisição a ser enviada ao parity
     let newAccountRequest = { "method": "parity_newAccountFromPhrase", "params": [name, pass], "id": 1, "jsonrpc": "2.0" };
 
-    await axios.post(httpEndpoint, newAccountRequest, { 'headers': headers })
-        .then(async function (response) {
-            
-            // se a conta for criar com sucesso 
-            // é criada uma requisição para que o parity reconheça a conta pelo nome
+    // cria a conta no parity e salva email no contrato
+    try {
+        // retorna endereço do usuário
+        let NewAccountResponse = await axios.post(httpEndpoint, newAccountRequest, { 'headers': headers });
+        accountAddress = NewAccountResponse.data.result;
+        console.log("Account created " + JSON.stringify(NewAccountResponse.data.result));
 
-            console.log("Account created " + JSON.stringify(response.data.result));
+        // Registra o nome da conta de usuário no parity
+        let setAccountNameRequest = { "method": "parity_setAccountName", "params": [accountAddress, name], "id": 1, "jsonrpc": "2.0" };
+        let setAccountNameResponse = await axios.post(httpEndpoint, setAccountNameRequest, { 'headers': headers });
+        console.log("Account name setup status: %s", JSON.stringify(setAccountNameResponse.data.result));
 
-            accountAddress = response.data.result;
-            let setAccountNameRequest = { "method": "parity_setAccountName", "params": [accountAddress, name], "id": 1, "jsonrpc": "2.0" };
+        return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
 
-            await axios.post(httpEndpoint, setAccountNameRequest, { 'headers': headers })
-                .then(function (response) {
-                    console.log("Account name setup status: %s", JSON.stringify(response.data.result));
-                    return res.status(200).json({ 'error': false, 'msg': 'account created successfully'});
-                })
-                .catch(function (error) {
-                    console.log("Account name setup failed: %s", JSON.stringify(error));
-                    return res.send({ 'error': true, 'msg': error });
-                });
-        })
-        .catch(function (error) {
-            console.log(error);
-            return res.send({ 'error': true, 'msg': error });
-        });
+    } catch (error) {
+
+        console.log("Account name setup failed: %s", JSON.stringify(error));
+        return res.send({ 'error': true, 'msg': error });
+    }
+
 })
 
 app.listen(3000, function() {
