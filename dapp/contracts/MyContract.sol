@@ -4,7 +4,7 @@ contract MyContract {
 
     // evento para notificar o cliente
     // de que a conta foi atualizada
-    event userUpdated(address _addr, string newEmail);
+    event userRegisted(address _addr, string newEmail);
 
     // estrutura para manter dados
     // do usuário
@@ -16,14 +16,14 @@ contract MyContract {
     // a sua estrutura
     mapping (address => User) users;
 
-    // função para cadastrar/atualizar
+    // função para cadastrar
     // a conta do usuário
     function setUser(address _addr, string memory _email) public {
         User storage user = users[_addr];
         user.email = _email;
 
         // notifica o cliente através do evento
-        emit userUpdated(_addr, "Conta atualizada!");
+        emit userRegisted(_addr, "Conta registrada!");
     }
 
     // função para resgatar
