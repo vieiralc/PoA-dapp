@@ -8,6 +8,7 @@ const lodash = require('lodash');
 const httpEndpoint = 'http://localhost:8540';
 const web3 = new Web3(httpEndpoint);
 const headers = { 'Content-Type': 'application/json' }
+const PORT = process.env.PORT || 3000;
 
 const allAccountsInfoRequest = { "method": "parity_allAccountsInfo", "params": [], "id": 1, "jsonrpc": "2.0" };
 
@@ -21,7 +22,7 @@ const app = express();
 // set default views folder
 app.set('views', __dirname + "/views");
 app.engine('html', require('ejs').renderFile);
-app.use(express.static('views'));
+app.use(express.static('public'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -53,50 +54,60 @@ app.post('/login', async function(req, res) {
     // pega nome de usuário e senha
     let user = req.body.username;
     let pass = req.body.password;
+
+    console.log(user, pass);
     
     let accounts = [];
         
-        // envia requisão ao parity e cria um array de contas
-        await axios.post(httpEndpoint, allAccountsInfoRequest, { headers })
-            .then(function(response) {
-                lodash.forEach(response.data.result, function (value, key) {
-                    accounts.push({ userName: value.name, userAddr: key })
-                });
-            })
-            .catch(function(error) {
-                return res.send({ "error": true, "msg": "Usuario nao encontrado" });
+    // envia requisão ao parity e cria um array de contas
+    await axios.post(httpEndpoint, allAccountsInfoRequest, { headers })
+        .then(function(response) {
+            lodash.forEach(response.data.result, function (value, key) {
+                accounts.push({ userName: value.name, userAddr: key })
             });
-
-        // filtra as contas para seleciona
-        // a conta que deseja realizar o login
-        let u = accounts.filter(obj => {
-            return obj.userName === user;
+        })
+        .catch(function(error) {
+            return res.send({ "error": true, "msg": "Usuario nao encontrado" });
         });
 
-        let userAddr;
+    console.log(accounts);
 
-        // verifica se a conta foi encontrada
-        if (u.length === 0) {
+    // filtra as contas para seleciona
+    // a conta que deseja realizar o login
+    let u = accounts.filter(obj => {
+        return obj.userName === user;
+    });
+
+    console.log(u);
+
+    let userAddr;
+
+    // verifica se a conta foi encontrada
+    if (u.length === 0) {
+        return res.send({ "error": true, "msg": "Nome de usuario ou senha incorretos" });
+    } else {
+        userAddr = u[0].userAddr;
+    }
+
+    console.log(userAddr, pass);
+
+    // se o parity desbloquear a conta 
+    // então o nome de usuário e senha estão corretos
+    // e o login é realizado com sucesso
+    await web3.eth.personal.unlockAccount(userAddr, pass, null)
+        .then(function(result) {
+            console.log(result);
+            console.log("Account unlocked!");
+            req.session.username = user;
+            req.session.password = pass;
+            console.log(req.session.username);
+            return res.status(200).json({ error: false, userData: { name: user, address: userAddr } })
+        })
+        .catch(function(error) {
+            console.log("Failed to unlock account!");
+            console.log(error);
             return res.send({ "error": true, "msg": "Nome de usuario ou senha incorretos" });
-        } else {
-            userAddr = u[0].userAddr;
-        }
-
-        // se o parity desbloquear a conta 
-        // então o nome de usuário e senha estão corretos
-        // e o login é realizado com sucesso
-        await web3.eth.personal.unlockAccount(userAddr, pass, null)
-            .then(function(result) {
-                console.log("Account unlocked!");
-                req.session.username = user;
-                req.session.password = pass;
-                return res.status(200).json({ error: false, userData: { name: user, address: userAddr } })
-            })
-            .catch(function(error) {
-                console.log("Failed to unlock account!");
-                console.log(error);
-                return res.send({ "error": true, "msg": "Nome de usuario ou senha incorretos" });
-            })
+        })
 });
 
 // rota para renderizar a dasboard
@@ -167,14 +178,32 @@ app.post('/register', async function(req, res) {
 
         return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
 
+        // // unlock account to register the e-mail
+        // let unlockResponse = await web3.eth.personal.unlockAccount(accountAddress, pass, null);
+        // console.log("*** Unlock response ***", unlockResponse);
+        // if (unlockResponse) {
+
+        //     MyContract.methods.setUser(accountAddress, "email@gmail.com")
+        //         .send({ from: accountAddress, gas: 3000000 })
+        //         .then(function(result) {
+        //             console.log("*** Usuário registrado ***");
+        //             return res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
+        //         })
+        //         .catch(function (error) {
+        //             console.log("+++ Erro ao salvar e-mail +++");
+        //             console.log(error);
+        //             return res.send({ 'error': true, 'msg': 'Erro ao criar e-mail.'});
+        //         })
+        // }
+
     } catch (error) {
 
-        console.log("Account name setup failed: %s", JSON.stringify(error));
+        console.log("Account name setup failed: %s", error);
         return res.send({ 'error': true, 'msg': error });
     }
 
 })
 
-app.listen(3000, function() {
-    console.log("App listening on port 3000");
+app.listen(PORT, function() {
+    console.log(`App listening on port ${PORT}`);
 })
