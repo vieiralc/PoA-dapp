@@ -25,7 +25,7 @@ module.exports = {
     },
     getProducts: async function(req, res) {
         let produtos = [{id: 1, produto: 'produto 01', preco: '1000'}, {id: 2, produto: 'produto 02', preco: '2000'}, 
-            {id: 3, produto: 'produto 02', preco: '3000'}]
+            {id: 3, produto: 'produto 03', preco: '3000'}]
         res.send({ error: false, msg: "produtos resgatados com sucesso", produtos});
     },
     addProducts: async function(req, res) {
@@ -37,7 +37,9 @@ module.exports = {
             console.log("*** ProductsApi -> AddProducts ***");
             console.log(req.body);
 
-            return res.status(200).json({ 'error': false, 'msg': 'Produto cadastrado com sucesso.'});
+            let idProduto = 4;
+
+            return res.status(200).json({ 'error': false, 'msg': 'Produto cadastrado com sucesso.', idProduto});
         }
         
     }

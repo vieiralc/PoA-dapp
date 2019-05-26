@@ -37,7 +37,7 @@ function addProduct() {
             let newRow = $("<tr>");
             let cols = "";
 
-            cols += `<td> ${1} </td>`;
+            cols += `<td> ${res.idProduto} </td>`;
             cols += `<td> ${produto} </td>`;
             cols += `<td> ${preco} </td>`;
             
