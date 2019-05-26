@@ -227,8 +227,11 @@ app.post('/register', async function(req, res) {
 
 // * Página de produtos * //
 
-app.get("/products", products_api.getProducts);
+app.get("/products", products_api.renderPage);
 
+app.get("/getProducts", products_api.getProducts);
+
+app.post("/addProducts", products_api.addProducts);
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
