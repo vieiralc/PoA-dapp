@@ -16,6 +16,8 @@
     <!--[if gt IE 8]><!-->
         <link rel="stylesheet" href="/css/layouts/side-menu.css">
     <!--<![endif]-->
+
+    <script src="/js/produtos.js"></script>
 </head>
 <body>
 
@@ -46,18 +48,18 @@
             <div class="content">
                 <h2 class="content-subhead">Cadastro de Produtos</h2>
                 <div class="row justify-content-center">
-                    <div class="col-md-9">
-                        <form>
+                    <div class="col-md-7">
+                        <form id="addProducts">
                             <div class="form-group">
                                 <label for="produto">Produto:</label>
                                 <input type="text" class="form-control" id="produto" placeholder="Descrição do produto" required>
                             </div>
                             <div class="form-group">
                                 <label for="preco">Preço:</label>
-                                <input type="number" min="0" class="form-control" id="preco" placeholder="Preço do produto" required>
+                                <input type="number" min="1" class="form-control" id="preco" placeholder="Preço do produto" required>
                             </div>
         
-                            <button type="submit" class="btn btn-primary btn-block">Adicionar</button>
+                            <button id="load" type="submit" class="btn btn-primary btn-block">Adicionar</button>
                         </form>
                     </div>
                 </div>
@@ -65,7 +67,7 @@
                 <h2 style="margin-top: 10%" class="content-subhead">Lista de Produtos</h2>
                 <div style="margin: 3% 0 0 10%" class="row justify-content-center">
                     <div class="col-md-12">
-                        <table class="table table-dark">
+                        <table id="products-table" class="table table-dark">
                             <thead>
                                 <tr>
                                     <th scope="col">id</th>
@@ -74,21 +76,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Notebook</td>
-                                    <td>1200</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Celular</td>
-                                    <td>1000</td>
-                                </tr>
-                                <tr>
-                                <th scope="row">3</th>
-                                    <td>Pc</td>
-                                    <td>3000</td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
