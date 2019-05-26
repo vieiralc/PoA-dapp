@@ -15,6 +15,8 @@ const allAccountsInfoRequest = { "method": "parity_allAccountsInfo", "params": [
 const contract_abi = require("../dapp/build/contracts/MyContract.json");
 const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
 
+const products_api = require("./apis/productsApi.js");
+
 const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
 
 const app = express();
@@ -222,6 +224,11 @@ app.post('/register', async function(req, res) {
     }
 
 })
+
+// * Página de produtos * //
+
+app.get("/products", products_api.getProducts);
+
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
