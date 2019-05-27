@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const allAccountsInfoRequest = { "method": "parity_allAccountsInfo", "params": [], "id": 1, "jsonrpc": "2.0" };
 
 const contract_abi = require("../dapp/build/contracts/MyContract.json");
-const contractAdress = "0x47443d09E8afee727d30dc8c23Bc3406519Df015";
+const contractAdress = "0x5B6a6Df167cb5DA753fa0eB5BA27f7cbA34f4524";
 
 const products_api = require("./apis/products/productsApi.js");
 const accounts_api = require("./apis/accounts/accountsApi.js");
@@ -216,6 +216,9 @@ app.get("/getProducts", products_api.renderGetProducts);
 
 app.post("/addProducts", products_api.addProducts);
 app.get("/listProducts", products_api.listProducts);
+
+// * Adicionar produtos a uma etapa * //
+app.post("/addToStage", products_api.addProductToStage);
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);

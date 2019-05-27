@@ -37,7 +37,7 @@ function addProduct() {
             alert("Erro ao cadastrar produto. Por favor, tente novamente mais tarde. " + res.msg);
         }
 
-    })
+    });
 
     alert("Seu produto será cadastrado em breve. Verifique a lista de produtos.");
     $('#load').attr('disabled', false);

@@ -7,7 +7,7 @@ const atob = require("atob");
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0x47443d09E8afee727d30dc8c23Bc3406519Df015';
+let contractAddress = '0x5B6a6Df167cb5DA753fa0eB5BA27f7cbA34f4524';
 
 let web3 = new Web3(httpEndpoint);
 let MyContract = new web3.eth.Contract(product_abi.abi, contractAddress);
@@ -44,6 +44,11 @@ module.exports = {
                 console.log("*** Get Products ***");
 
                 console.log("prod", prod);
+
+                if (prod === null) {
+                    return res.send({ error: false, msg: "no products yet"});
+                }
+
                 let produtos = [];
                 for (i = 0; i < prod['0'].length; i++) {
                     // deleted products have id == 0
@@ -82,7 +87,7 @@ module.exports = {
                 let accountUnlocked = await web3.eth.personal.unlockAccount(userAddr, pass, null)
                 if (accountUnlocked) {
 
-                    await MyContract.methods.addProduct(produto.toString(), preco.toString())
+                    await MyContract.methods.addProduct(produto, preco)
                         .send({ from: userAddr, gas: 3000000 })
                         .then(function(result) {
                             console.log(result);
@@ -97,5 +102,35 @@ module.exports = {
                 return res.send({ 'error': true, 'msg': 'Erro ao desbloquear sua conta. Por favor, tente novamente mais tarde.'});
             }
         }
+    },
+    addProductToStage: async function(req, res) {
+        console.log("*** products -> productsApi -> addProductToStage ***");
+        console.dir(req.body);
+
+        let productsIds = [];
+        let stageDesc = req.body.StageDesc;
+        let userAddr = req.session.address;
+
+        // converter ids dos produtos para inteiro
+        for (let i = 0; i < req.body.productsIds.length; i++) {
+            let productId = parseInt(req.body.productsIds[i], 10);
+            productsIds.push(productId);
+        }
+
+        console.log(userAddr, productsIds, stageDesc);
+
+        // salvar etapa no contrato
+        await MyContract.methods.addToStage(productsIds, stageDesc)
+            .send({ from: userAddr, gas: 3000000 })
+            .then(res => {
+                console.log("etapa registrada com sucesso");
+                console.log(res);
+                res.send({ error: false, msg: "Etapa registrada com sucesso"});        
+            })
+            .catch(err => {
+                console.log("*** ERROR: products -> productsApi -> addProductToStage ***");
+                console.log(err);
+                res.send({ error: true, msg: "Erro ao registrar etapa. Por favor, tente novamente mais tarde."});
+            })
     }
 }
