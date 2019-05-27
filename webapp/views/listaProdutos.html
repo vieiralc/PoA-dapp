@@ -16,6 +16,8 @@
     <!--[if gt IE 8]><!-->
         <link rel="stylesheet" href="/css/layouts/side-menu.css">
     <!--<![endif]-->
+
+    <script src="/js/listProducts.js"></script>
 </head>
 <body>
 
@@ -34,10 +36,41 @@
                     <li class="pure-menu-item"><a href="/dashboard" class="pure-menu-link">Home</a></li>
                     <li class="pure-menu-item"><a href="/addProducts" class="pure-menu-link">Cadastrar Produtos</a></li>
                     <li class="pure-menu-item"><a href="/getProducts" class="pure-menu-link">Lista Produtos</a></li>
-                    <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Sair</a></li>    
+                    <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Sair</a></li> 
                 </ul>
             </div>
         </div>
+
+        <div id="main">
+            <div class="header">
+                <h1>Produtos</h1>
+            </div>
+
+            <div class="content">
+                <h2 style="margin-top: 10%" class="content-subhead">Lista de Produtos</h2>
+                <div style="margin: 3% 0 0 10%" class="row justify-content-center">
+                    <div class="col-md-12">
+                        <table id="products-table" class="table table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">id</th>
+                                    <th scope="col">Produto</th>
+                                    <th scope="col">Preço</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            
+        <!-- End main -->
+        </div>
+
+    <!-- End layout -->
     </div>
             
     <script src="/js/ui.js"></script>
