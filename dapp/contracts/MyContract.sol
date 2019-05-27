@@ -6,6 +6,7 @@ contract MyContract {
     // evento para notificar o cliente
     // de que a conta foi atualizada
     event userRegisted(address _addr, string newEmail);
+    event productRegistered(uint id);
 
     // estrutura para manter dados
     // do usuário
@@ -59,7 +60,7 @@ contract MyContract {
         products[lastId] = Product(lastId, _desc, _price, msg.sender);
         productsOfOwner[msg.sender].push(lastId);
 
-        return lastId;
+        emit productRegistered(lastId);
     }
 
     // função para resgatar info de um produto
