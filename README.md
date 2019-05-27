@@ -6,6 +6,7 @@ Os softwares necessários para rodar o app são:
     <li> Nodejs/npm: https://nodejs.org/en/</li>
     <li> Truffle Framework (Para fazer deploy e testes do smart contract)</li>
     <li> Curl https://curl.haxx.se/ (Para enviar requisições ao parity pelo terminal) </li>
+    <li> Parity https://wiki.parity.io/Setup </li>
 </ol>
 
 Após instalar o Nodejs: <br>
@@ -53,6 +54,7 @@ Agora que a blockchain esta rodando, em um outro terminal, entre na pasta dapp. 
 Copie o endereço do contrato e cole em: <br>
 
 webapp/index.js linha 16. Exemplo: <br>
+webapp/apis/products/productsApi.js linha 10. Exemplo: <br>
 
     const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
 
