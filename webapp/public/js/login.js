@@ -28,7 +28,7 @@ function login(event) {
             window.location.href="/dashboard";
         } else {
             console.log(res.msg);
-            alert("Erro ao fazer login sua conta. " + res.msg);
+            alert("Erro ao fazer login. " + res.msg);
         }
 
     })
