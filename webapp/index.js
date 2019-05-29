@@ -16,10 +16,11 @@ const allAccountsInfo = require('./utils/parityRequests').allAccountsInfoRequest
 const parityRequest = require('./utils/parityRequests');
 
 const contract_abi = require("../dapp/build/contracts/MyContract.json");
-const contractAdress = "0x2535Dfea21215cF30bC3716A6EC4442942E32f56";
+const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
 
-const products_api = require("./apis/products/productsApi.js");
+const products = require("./apis/products/products.js");
 const auth = require("./apis/accounts/auth.js");
+const stages = require("./apis/products/stages")
 
 const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
 
@@ -138,15 +139,17 @@ app.post('/register', async function(req, res) {
 
 })
 
-// * Página de produtos * //
-app.get("/addProducts", products_api.renderAddProducts);
-app.get("/getProducts", products_api.renderGetProducts);
+// * Produtos * //
+app.get("/addProducts", products.renderAddProducts);
+app.get("/getProducts", products.renderGetProducts);
 
-app.post("/addProducts", products_api.addProducts);
-app.get("/listProducts", products_api.listProducts);
+app.post("/addProducts", products.addProducts);
+app.get("/listProducts", products.getProducts);
 
-// * Adicionar produtos a uma etapa * //
-app.post("/addToStage", products_api.addProductToStage);
+// * Estágios * //
+app.get("/addStage", stages.renderAddStage);
+
+app.post("/addStage", stages.addStage);
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
