@@ -1,15 +1,19 @@
 const path = require('path');
 const Web3 = require("web3");
-const axios = require("axios");
-const lodash = require("lodash");
-const atob = require("atob");
 
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
 let contractAddress = '0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583';
 
-let web3 = new Web3(httpEndpoint);
+const OPTIONS = {
+    defaultBlock: "latest",
+    transactionConfirmationBlocks: 1,
+    transactionBlockTimeout: 5
+};
+
+let web3 = new Web3(httpEndpoint, null, OPTIONS);
+
 let MyContract = new web3.eth.Contract(product_abi.abi, contractAddress);
 
 module.exports = {
