@@ -41,9 +41,7 @@ Pare a execução do nó. Descomente o código no arquivo /nodes/node00/node.tom
 
 Execute o comando: <br>
 
-    -> parity --config nodes/node00/node.toml --unlock 0x00a1103c941fc2e1ef8177e6d9cc4657643f274b --password node.pwds
-
-Com a flag --unlock o nó estará sempre desbloqueado para que se consiga fazer o deploy de um smart contract <br>
+    -> parity --config nodes/node00/node.toml
 
 #### Para fazer o deploy do contrato
 
