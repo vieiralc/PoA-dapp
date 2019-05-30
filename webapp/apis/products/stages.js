@@ -26,6 +26,16 @@ function renderAddStage(req, res) {
     }
 }
 
+function renderGetStages(req, res) {
+    // verifica se usuário esta logado
+    if (!req.session.username) {
+        res.redirect('/');
+        res.end();
+    } else {
+        res.render('listaEtapas.html');
+    }
+}
+
 async function addStage(req, res) {
     
     console.log("*** products -> productsApi -> addProductToStage ***");
@@ -70,7 +80,67 @@ async function addStage(req, res) {
 
 }
 
+async function listStages(req, res) {
+    console.log("*** apis -> products -> stages -> listStages ***");
+
+    let userAddr = req.session.address;
+    
+    await MyContract.methods.getStages(userAddr)
+        .call({ from: userAddr, gas: 3000000 })
+        .then(async function(stages) {
+            if (stages === null) {
+                return res.send({ error: false, msg: "no stages yet"});
+            }
+
+            let stagesArray = [];
+            for (let i = 0; i < stages['0'].length; i++) {
+                let stageObj = {}
+
+                stageObj.stageID = +stages['0'][i];
+                stageObj.stageDesc = stages['2'][i];
+
+                let productsIDs = stages['1'][i];
+                let produtos = await productInfo(productsIDs, userAddr);
+
+                stageObj.produtos = produtos;
+                stagesArray.push(stageObj);
+            }
+            console.log(stagesArray);
+            res.send({error: false, stages: stagesArray});
+        })
+        .catch(error => {
+            console.log("*** ERROR: api -> products -> stages -> listStages -> catch ***", error);
+            res.send({error: true, msg: error})
+        })
+}
+
+async function productInfo(productsIds, userAddr) {
+    let produtos = [];
+
+    for (let i = 0; i < productsIds.length; i++) {
+        
+        let productID = +productsIds[i];
+        await MyContract.methods.productInfo(productID)
+            .call({ from: userAddr, gas: 3000000 })
+            .then(res => {
+                let productObj = {}
+                productObj.productID = +res['0'];
+                productObj.produto   = res['1'];
+                productObj.preco     = +res['3'];
+                produtos.push(productObj);
+            })
+            .catch(err => {
+                console.log("*** ERROR: api -> products -> stages -> productInfo -> catch ***", error);
+                return null;
+            });
+    }
+
+    return produtos;
+}
+
 module.exports = {
     renderAddStage,
-    addStage
+    renderGetStages,
+    addStage,
+    listStages
 }
