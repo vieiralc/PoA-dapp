@@ -39,16 +39,13 @@ module.exports = {
     getProducts: async function(req, res) {
 
         let userAddr = req.session.address;
-        console.log(userAddr);
-        console.log(typeof(userAddr));
+        console.log("*** Getting products ***", userAddr);
 
         await MyContract.methods.getProducts(userAddr)
             .call({ from: userAddr, gas: 3000000 })
             .then(function (prod) {
-                console.log("*** Get Products ***");
 
                 console.log("prod", prod);
-
                 if (prod === null) {
                     return res.send({ error: false, msg: "no products yet"});
                 }
