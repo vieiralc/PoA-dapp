@@ -20,7 +20,7 @@ const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
 
 const products = require("./apis/products/products.js");
 const auth = require("./apis/accounts/auth.js");
-const stages = require("./apis/products/stages")
+const stages = require("./apis/products/stages");
 
 const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
 
@@ -148,8 +148,10 @@ app.get("/listProducts", products.getProducts);
 
 // * Estágios * //
 app.get("/addStage", stages.renderAddStage);
+app.get("/getStages", stages.renderGetStages);
 
 app.post("/addStage", stages.addStage);
+app.get("/listStages", stages.listStages);
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
