@@ -21,7 +21,7 @@ module.exports = {
 
         // verifica se usuario esta logado
         if (!req.session.username) {
-            res.redirect('/');
+            res.redirect('/api/auth');
             res.end();
         } else {
             res.render('produtos.html');
@@ -30,7 +30,7 @@ module.exports = {
     renderGetProducts: function(req, res) {
         // verifica se usuario esta logado
         if (!req.session.username) {
-            res.redirect('/');
+            res.redirect('/api/auth');
             res.end();
         } else {
             res.render('listaProdutos.html');

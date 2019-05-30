@@ -19,7 +19,7 @@ function renderAddStage(req, res) {
 
     // verifica se usuario esta logado
     if (!req.session.username) {
-        res.redirect('/');
+        res.redirect('/api/auth');
         res.end();
     } else {
         res.render('stages.html');
@@ -29,7 +29,7 @@ function renderAddStage(req, res) {
 function renderGetStages(req, res) {
     // verifica se usuário esta logado
     if (!req.session.username) {
-        res.redirect('/');
+        res.redirect('/api/auth');
         res.end();
     } else {
         res.render('listaEtapas.html');

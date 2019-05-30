@@ -1,30 +1,10 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const Web3 = require('web3');
-const axios = require('axios');
-const lodash = require('lodash');
-
-const httpEndpoint = require('./utils/nodesEndPoints').node00Endpoint;
-const web3 = new Web3(httpEndpoint);
-const headers = require('./utils/parityRequests').headers;
-const PORT = process.env.PORT || 3000;
-
-const ownerAccount = "0x00a1103c941fc2e1ef8177e6d9cc4657643f274b";
-
-const allAccountsInfo = require('./utils/parityRequests').allAccountsInfoRequest;
-const parityRequest = require('./utils/parityRequests');
-
-const contract_abi = require("../dapp/build/contracts/MyContract.json");
-const contractAdress = "0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583";
+const app = express();
 
 const products = require("./apis/products/products.js");
-const auth = require("./apis/accounts/auth.js");
 const stages = require("./apis/products/stages");
-
-const MyContract = new web3.eth.Contract(contract_abi.abi, contractAdress);
-
-const app = express();
 
 // set default views folder
 app.set('views', __dirname + "/views");
@@ -41,105 +21,16 @@ app.use(session({
     resave: false
 }));
 
-// @route  GET /
-// @desc   renders index
-// @access Public
-app.get('/', auth.renderIndex);
+const authRoutes = require('./apis/routes/auth.js');
 
-// @route  GET /register
-// @desc   renders register
-// @access Public
-app.get('/register', auth.renderRegister);
+app.get('/', (req, res) => {
+    res.redirect('/api/auth');
+});
 
-// @route  GET /dashboard
-// @desc   renders dashboard
-// @access Private
-app.get('/dashboard', auth.renderDashboard);
+// * Auth pages * //
+app.use("/api/auth", authRoutes);
 
-// @route  GET /logout
-// @desc   logs out user
-// @access Private
-app.get('/logout', auth.logout);
-
-// @route  POST /login
-// @desc   logs in user
-// @access Public
-app.post('/login', auth.login);
-
-// @route  POST /register
-// @desc   logs in user
-// @access Public
-app.post('/register', async function(req, res) {
-    console.log("*** REGISTER ***");
-    console.log(req.body);
-    
-    let name = req.body.username;
-    let pass = req.body.password;
-    let accountAddress;
-
-    // cria requisição a ser enviada ao parity
-    let newAccountRequest = parityRequest.newAccountRequest(name, pass);
-
-    // cria a conta no parity e salva email no contrato
-    try {
-        // retorna endereço do usuário
-        let NewAccountResponse = await axios.post(httpEndpoint, newAccountRequest, { 'headers': headers });
-        accountAddress = NewAccountResponse.data.result;
-        console.log("Account created " + JSON.stringify(NewAccountResponse.data.result));
-
-        // Registra o nome da conta de usuário no parity
-        let setAccountNameRequest = { "method": "parity_setAccountName", "params": [accountAddress, name], "id": 1, "jsonrpc": "2.0" };
-        let setAccountNameResponse = await axios.post(httpEndpoint, setAccountNameRequest, { 'headers': headers });
-        console.log("Account name setup status: %s", JSON.stringify(setAccountNameResponse.data.result));
-
-        res.status(200).json({ 'error': false, 'msg': 'Conta criada com sucesso.'});
-
-        // Desbloqueia a conta do usuário para salvar seus dados
-        // Ex: email
-        let unlockResponse = await web3.eth.personal.unlockAccount(accountAddress, pass, null);
-        console.log("*** Unlock response ***", unlockResponse);
-
-        if (unlockResponse) {
-
-            // tranfere 1 ether para a conta do usuário
-            let sendFundsResponse;
-            
-            await web3.eth.sendTransaction({from: ownerAccount, to: accountAddress, value: "0xDE0B6B3A7640000"})
-                .then(receipt => {
-                    console.log("", receipt);
-                    sendFundsResponse = true;
-                })
-
-            console.log("*** sendFundsResponse ***", sendFundsResponse);
-
-            if (sendFundsResponse) {
-                MyContract.methods.setUser(accountAddress, "email@gmail.com")
-                    .send({ from: accountAddress, gas: 3000000 })
-                    .then(function(result) {
-                        console.log("*** Usuário registrado ***");
-                        return res.end();
-                    })
-                    .catch(function (error) {
-                        console.log("+++ Erro ao salvar e-mail +++");
-                        console.log(error);
-                        return res.send({ 'error': true, 'msg': 'Erro ao criar e-mail.'});
-                    })
-            } else {
-                return res.send({ 'error': true, 'msg': 'Erro ao transferir fundos.'});
-            }
-
-        } else {
-            return res.send({ 'error': true, 'msg': 'Erro ao desbloquear a conta.'});
-        }
-
-    } catch (error) {
-        console.log("Account name setup failed: %s", error);
-        return res.send({ 'error': true, 'msg': error });
-    }
-
-})
-
-// * Produtos * //
+// * Products pages * //
 app.get("/addProducts", products.renderAddProducts);
 app.get("/getProducts", products.renderGetProducts);
 
@@ -152,6 +43,9 @@ app.get("/getStages", stages.renderGetStages);
 
 app.post("/addStage", stages.addStage);
 app.get("/listStages", stages.listStages);
+
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
