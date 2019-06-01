@@ -12,7 +12,7 @@ const web3 = new Web3(httpEndpoint);
 
 function renderIndex(req, res) {
     if (req.session.username) {
-        res.redirect("/dashboard");
+        res.redirect("/api/auth/dashboard");
         res.end();
     } else {
         res.render('index.html');
@@ -22,7 +22,7 @@ function renderIndex(req, res) {
 
 function renderRegister(req, res) {
     if (req.session.username) {
-        res.redirect('/dashboard');
+        res.redirect('/api/auth/dashboard');
         res.end();
     } else {
         res.render('register.html');

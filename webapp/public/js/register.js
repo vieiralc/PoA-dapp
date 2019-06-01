@@ -21,7 +21,7 @@ function register(event) {
     let password = $("#password").val();
 
     // envia a requisição para o servidor
-    $.post("/register", {username: username, password: password}, function(res) {
+    $.post("/api/auth/register", {username: username, password: password}, function(res) {
         console.log(res);
         // verifica resposta do servidor
         // redireciona para tela de login
