@@ -4,7 +4,7 @@ const Web3 = require('web3');
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583';
+let contractAddress = '0x58b99C00cDA503A9d4E8b701efF9da805fc0D60E';
 
 const OPTIONS = {
     defaultBlock: "latest",
@@ -85,7 +85,7 @@ async function listStages(req, res) {
 
     let userAddr = req.session.address;
     
-    await MyContract.methods.getStages(userAddr)
+    await MyContract.methods.getStages()
         .call({ from: userAddr, gas: 3000000 })
         .then(async function(stages) {
             if (stages === null) {

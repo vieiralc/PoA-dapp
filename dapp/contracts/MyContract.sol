@@ -33,13 +33,15 @@ contract MyContract {
 
     // mapeia um id a um produto
     mapping (uint => Product) products;
+    uint[] public productsIds;
     // mapping para resgatar produtos de um usuário
-    mapping (address => uint[]) productsOfOwner;
+    //mapping (address => uint[]) productsOfOwner;
 
     // mapeia um id a uma etapa
     mapping(uint => Stage) stages;
+    uint[] public stagesIds;
     // mapping para resgatar etapas dos produtos de um usuário
-    mapping (address => uint[]) productsStage;
+    //mapping (address => uint[]) productsStage;
 
     // mapeia endereço do usuário a sua estrutura
     mapping (address => User) users;
@@ -68,10 +70,10 @@ contract MyContract {
         require(bytes(_desc).length >= 1, "Name invalid");
         require(_price > 0, "Price must be higher than zero");
 
-        lastId++;
         products[lastId] = Product(lastId, _desc, _price, msg.sender);
-        productsOfOwner[msg.sender].push(lastId);
-
+        productsIds.push(lastId);
+        lastId++;
+        
         emit productRegistered(lastId);
     }
 
@@ -84,18 +86,20 @@ contract MyContract {
     }
 
     // função que retorna todos os produtos de um usuário
-    function getProducts(address _owner) public view returns(uint[] memory, string[] memory, address[] memory, uint[] memory) {
+    function getProducts() public view returns(uint[] memory, string[] memory, address[] memory, uint[] memory) {
 
-       uint[] memory ids = new uint[](productsOfOwner[_owner].length);
-       string[] memory names = new string[](productsOfOwner[_owner].length);
-       address[] memory owners = new address[](productsOfOwner[_owner].length);
-       uint[] memory prices = new uint[](productsOfOwner[_owner].length);
+        uint[] memory ids = productsIds;
 
-       for(uint i = 0; i < productsOfOwner[_owner].length; i++) {
-           (ids[i],names[i],owners[i],prices[i]) = productInfo(productsOfOwner[_owner][i]);
-       }
+        uint[] memory idsProducts = new uint[](ids.length);
+        string[] memory names = new string[](ids.length);
+        address[] memory owners = new address[](ids.length);
+        uint[] memory prices = new uint[](ids.length);
 
-       return (ids, names, owners, prices);
+        for (uint i = 0; i < ids.length; i++) {
+            (idsProducts[i], names[i], owners[i], prices[i]) = productInfo(i);
+        }
+
+        return (idsProducts, names, owners, prices);
     }
 
     // função para adicionar produtos à um estágio
@@ -103,9 +107,9 @@ contract MyContract {
         require(bytes(_stageDesc).length >= 1, "Name invalid");
         require(_productsIds.length > 0, "Price must be higher than zero");
 
-        stagesId++;
         stages[stagesId] = Stage(stagesId, _productsIds, _stageDesc, msg.sender);
-        productsStage[msg.sender].push(stagesId);
+        stagesIds.push(stagesId);
+        stagesId++;
 
         emit StageRegistered(_productsIds);
     }
@@ -119,18 +123,19 @@ contract MyContract {
     }
 
     // função que retorna todos os produtos de um usuário
-    function getStages(address _owner) public view returns (uint[] memory, uint[][] memory, string[] memory, address[] memory) {
+    function getStages() public view returns (uint[] memory, uint[][] memory, string[] memory, address[] memory) {
 
-       uint[] memory ids = new uint[](productsStage[_owner].length);
-       uint[][] memory prods = new uint[][](productsStage[_owner].length);
-       string[] memory prods_desc = new string[](productsStage[_owner].length);
-       address[] memory owners = new address[](productsStage[_owner].length);
+        uint[] memory ids = productsIds;
+        uint[] memory idsStages = new uint[](ids.length);
+        uint[][] memory prods = new uint[][](ids.length);
+        string[] memory prods_desc = new string[](ids.length);
+        address[] memory owners = new address[](ids.length);
 
-       for(uint i = 0; i < productsStage[_owner].length; i++) {
-           (ids[i],prods[i],prods_desc[i],owners[i]) = stageInfo(productsStage[_owner][i]);
-       }
+        for(uint i = 0; i < ids.length; i++) {
+            (idsStages[i], prods[i], prods_desc[i], owners[i]) = stageInfo(i);
+        }
 
-       return (ids, prods, prods_desc, owners);
+        return (ids, prods, prods_desc, owners);
     }
 
 }
