@@ -50,6 +50,7 @@ app.get("/addHistory", history.renderAddHistory);
 app.post("/addHistory", history.addToHistory);
 
 app.get("/getHistory", history.getHistory);
+app.get("/listHistory", history.renderGetHistory);
 
 const PORT = process.env.PORT || 3000;
 

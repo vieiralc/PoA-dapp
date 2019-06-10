@@ -4,7 +4,7 @@ const Web3 = require("web3");
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0x3E0c911ECdd306D5e4e57300Fc78dAA76720b4da';
+let contractAddress = '0x9369f4490A6f7383A4E38b812ECb3bBc1Cb32cD1';
 
 const productInfo = require('./stages').productInfo;
 
@@ -26,6 +26,15 @@ module.exports = {
             res.end();
         } else {
             res.render('historico.html');
+        }
+    },
+    renderGetHistory: function(req, res) {
+        // verifica se usuario esta logado
+        if (!req.session.username) {
+            res.redirect('/api/auth');
+            res.end();
+        } else {
+            res.render('listaHistorico.html');
         }
     },
     addToHistory: async function(req, res) {
@@ -97,6 +106,7 @@ module.exports = {
                 console.log("histories", historiesArray);
 
                 res.send({ error: false, msg: "historico resgatado com sucesso", historiesArray});
+                return historiesArray;
             })
             .catch(error => {
                 console.log("*** apis -> products -> history -> getHistory ERROR: ***", error);
