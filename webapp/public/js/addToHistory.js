@@ -98,7 +98,7 @@ function compare(event) {
         const min = date.getMinutes();
         const sec = date.getSeconds();
 
-        const dateString = `${day}/${month}/${year} - ${hours}:${min}:${sec}`;
+        const dateString = `${day}/${month+1}/${year} - ${hours}:${min}:${sec}`;
 
         dataToServer.date = dateString;
         
