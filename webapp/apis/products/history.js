@@ -4,7 +4,7 @@ const Web3 = require("web3");
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0x9369f4490A6f7383A4E38b812ECb3bBc1Cb32cD1';
+let contractAddress = '0xb008797C47ea9ECd97F08870d22Cf678B19B68A3';
 
 const productInfo = require('./stages').productInfo;
 
@@ -37,7 +37,7 @@ module.exports = {
             res.render('listaHistorico.html');
         }
     },
-    addToHistory: async function(req, res) {
+    addHistory: async function(req, res) {
 
         if (!req.session.username) {
             res.redirect('/');
@@ -45,19 +45,19 @@ module.exports = {
         } else {
             console.log("*** Apis -> products -> history: ***");
             console.log(req.body);
-
-            let productsIds = []
             
-            const { stage, productId, date } = req.body;
+            let dates = []
+
+            const { productId, date } = req.body;
             const userAddr = req.session.address;
-            productsIds.push(productId);
+            dates.push(date);
             let pass = req.session.password;
             
             try {
                 let accountUnlocked = await web3.eth.personal.unlockAccount(userAddr, pass, null)
                 if (accountUnlocked) {
 
-                    await MyContract.methods.addToHistory(productsIds, stage, date)
+                    await MyContract.methods.addNewHistory(productId, dates)
                         .send({ from: userAddr, gas: 3000000 })
                         .then(function(result) {
                             console.log(result);
@@ -79,34 +79,24 @@ module.exports = {
         let userAddr = req.session.address;
         console.log("*** Getting history ***");
 
-        await MyContract.methods.getHistory()
+        await MyContract.methods.getHistories()
             .call({ from: userAddr, gas: 3000000 })
             .then(async function (his) {
-
                 console.log("his", his);
-                if (his === null) {
-                    return res.send({ error: false, msg: "no products yet"});
-                }
 
                 let historiesArray = [];
-                for (i = 0; i < his['1'].length; i++) {
-                    let historyObj = {}
+                for (let i = 0; i < his['0'].length; i++) {
+                    let historyObj = {};
 
-                    historyObj.stageDesc = his['1'][i];
-                    historyObj.date = his['2'][i];
-                    historyObj.owner = his['3'][i];
+                    historyObj.product = his['0'][i];
+                    historyObj.dates = his['1'][i];
+                    historyObj.owner = his['2'][i];
 
-                    let productsIds = his['0'][i];
-                    let produtos = await productInfo(productsIds, userAddr);
-
-                    historyObj.produtos = produtos;
                     historiesArray.push(historyObj);
                 }
 
-                console.log("histories", historiesArray);
-
-                res.send({ error: false, msg: "historico resgatado com sucesso", historiesArray});
-                return historiesArray;
+                console.log(historiesArray);
+                res.send({ error: false, msg: 'Histórico resgatado com sucesso', historiesArray });
             })
             .catch(error => {
                 console.log("*** apis -> products -> history -> getHistory ERROR: ***", error);
