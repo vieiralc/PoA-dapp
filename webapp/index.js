@@ -47,7 +47,7 @@ app.get("/listStages", stages.listStages);
 
 // * History * //
 app.get("/addHistory", history.renderAddHistory);
-app.post("/addHistory", history.addToHistory);
+app.post("/addHistory", history.addHistory);
 
 app.get("/getHistory", history.getHistory);
 app.get("/listHistory", history.renderGetHistory);
