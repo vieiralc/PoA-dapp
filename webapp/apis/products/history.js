@@ -4,9 +4,7 @@ const Web3 = require("web3");
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0x26Db9Ab19c43F1F808DA906b40014D99Ea77da27';
-
-const productInfo = require('./stages').productInfo;
+let contractAddress = require('../../utils/parityRequests').contractAddress;
 
 const OPTIONS = {
     defaultBlock: "latest",

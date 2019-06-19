@@ -7,7 +7,8 @@ const allAccountsInfo = require('../../utils/parityRequests').allAccountsInfoReq
 const httpEndpoint = require('../../utils/nodesEndPoints').node00Endpoint;
 const parityRequest = require('../../utils/parityRequests');
 const headers = require('../../utils/parityRequests').headers;
-let contractAddress = '0xe99789A2367F08fEB5ba9553bA54C14C63Ccb583';
+const contractAddress = require('../../utils/parityRequests').contractAddress;
+
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 
 const OPTIONS = {

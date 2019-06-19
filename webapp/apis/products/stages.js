@@ -4,7 +4,7 @@ const Web3 = require('web3');
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0x9369f4490A6f7383A4E38b812ECb3bBc1Cb32cD1';
+let contractAddress = require('../../utils/parityRequests').contractAddress;
 
 const OPTIONS = {
     defaultBlock: "latest",
@@ -84,6 +84,7 @@ async function listStages(req, res) {
     console.log("*** apis -> products -> stages -> listStages ***");
 
     let userAddr = req.session.address;
+    console.log(userAddr);
     
     await MyContract.methods.getStages()
         .call({ from: userAddr, gas: 3000000 })
