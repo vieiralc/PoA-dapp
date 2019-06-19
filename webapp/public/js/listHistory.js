@@ -32,7 +32,7 @@ function getHistory() {
                                 <table id="historyList${i}" class="table table-dark">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Produto</th>
+                                            <th scope="col">Etapa</th>
                                             <th scope="col">Owner</th>
                                             <th scope="col">Data</th>
                                         </tr>
@@ -47,7 +47,8 @@ function getHistory() {
                 `;
 
                 $("#accordionHistory").append(html);
-                appendProducts(histories[i].product, i, histories[i].owner, histories[i].dates);
+                console.log(histories[i].stage)
+                appendProducts(histories[i].stage, i, histories[i].owner, histories[i].dates);
             }
             
             
@@ -58,17 +59,17 @@ function getHistory() {
     })
 }
 
-function appendProducts(productName, historyID, owner, dates) {
-    for(let i = 0; i < dates.length; i++) {
+function appendProducts(stages, historyID, owner, dates) {
+    for(let i = 0; i < stages.length; i++) {
         let newRow = $("<tr>");
         let cols = "";
 
-        cols += `<td> ${productName} </td>`;
+        cols += `<td> ${stages[i]} </td>`;
         cols += `<td> ${owner.substring(1, 10)} </td>`;
         cols += `<td> ${dates[i]} </td>`;
         
         newRow.append(cols);
         $(`#historyList${historyID}`).append(newRow);
     }
-    console.log(productName, historyID);
+    console.log(stages, historyID);
 }
