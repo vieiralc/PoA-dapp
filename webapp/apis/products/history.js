@@ -4,7 +4,7 @@ const Web3 = require("web3");
 const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
 const httpEndpoint = 'http://localhost:8540';
 
-let contractAddress = '0xb008797C47ea9ECd97F08870d22Cf678B19B68A3';
+let contractAddress = '0x26Db9Ab19c43F1F808DA906b40014D99Ea77da27';
 
 const productInfo = require('./stages').productInfo;
 
@@ -46,18 +46,20 @@ module.exports = {
             console.log("*** Apis -> products -> history: ***");
             console.log(req.body);
             
-            let dates = []
+            let dates = [];
+            let stages = [];
 
-            const { productId, date } = req.body;
+            const { productId, stage, date } = req.body;
             const userAddr = req.session.address;
             dates.push(date);
+            stages.push(stage);
             let pass = req.session.password;
             
             try {
                 let accountUnlocked = await web3.eth.personal.unlockAccount(userAddr, pass, null)
                 if (accountUnlocked) {
 
-                    await MyContract.methods.addNewHistory(productId, dates)
+                    await MyContract.methods.addNewHistory(productId, stages, dates)
                         .send({ from: userAddr, gas: 3000000 })
                         .then(function(result) {
                             console.log(result);
@@ -89,8 +91,9 @@ module.exports = {
                     let historyObj = {};
 
                     historyObj.product = his['0'][i];
-                    historyObj.dates = his['1'][i];
-                    historyObj.owner = his['2'][i];
+                    historyObj.stage = his['1'][i]
+                    historyObj.dates = his['2'][i];
+                    historyObj.owner = his['3'][i];
 
                     historiesArray.push(historyObj);
                 }
