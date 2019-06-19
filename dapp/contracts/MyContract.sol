@@ -37,6 +37,7 @@ contract MyContract {
     struct History {
         uint productId;
         string productName;
+        string[] stageDesc;
         string[] dates;
         address productOwner;
     }
@@ -133,31 +134,32 @@ contract MyContract {
     }
 
     // função para adicionar o histórico de um produto
-    function addNewHistory(uint _productId, string[] memory _dates) public {
+    function addNewHistory(uint _productId, string[] memory _stageDesc, string[] memory _dates) public {
         require(_productId >= 0, "invalid productId");
 
         if (!isProductInHistory(_productId)) {
             string memory productName;
             (, productName, ,) = productInfo(_productId);
 
-            histories[historyId] = History(_productId, productName, _dates, msg.sender);
+            histories[historyId] = History(_productId, productName, _stageDesc, _dates, msg.sender);
             historiesIds.push(historyId);
             productsInHistory.push(_productId);
             historyId++;
             emit historyRegistered("History saved!");
         } else {
-            bool added = addToHistory(_productId, _dates);
+            bool added = addToHistory(_productId, _stageDesc, _dates);
             if (added) {
                 emit historyRegistered("History saved!");
             }
         }
     }
 
-    function addToHistory(uint _productId, string[] memory _dates) public returns (bool) {
+    function addToHistory(uint _productId, string[] memory _stageDesc, string[] memory _dates) public returns (bool) {
         uint size = historiesIds.length;
         for (uint i = 0; i < size; i++) {
             if (histories[i].productId == _productId) {
                 History storage his = histories[i];
+                his.stageDesc.push(_stageDesc[0]);
                 his.dates.push(_dates[0]);
                 return true;
             }
@@ -165,29 +167,31 @@ contract MyContract {
         return false;
     }
 
-    function HistoryInfo(uint _id) public view returns (string memory, string[] memory, address) {
+    function HistoryInfo(uint _id) public view returns (string memory, string[] memory, string[] memory, address) {
         require(_id <= historyId, "History does not exist");
 
         History memory his = histories[_id];
         return (
             his.productName,
+            his.stageDesc,
             his.dates,
             his.productOwner
         );
     }
 
-    function getHistories() public view returns (string[] memory, string[][] memory, address[] memory) {
+    function getHistories() public view returns (string[] memory, string[][] memory, string[][] memory, address[] memory) {
         uint[] memory ids = historiesIds;
 
         string[] memory productsNames = new string[](ids.length);
+        string[][] memory stageDesc = new string[][](ids.length);
         string[][] memory dates = new string[][](ids.length);
         address[] memory addrs = new address[](ids.length);
 
         for (uint i = 0; i < ids.length; i++) {
-            (productsNames[i], dates[i], addrs[i]) = HistoryInfo(i);
+            (productsNames[i], stageDesc[i], dates[i], addrs[i]) = HistoryInfo(i);
         }
 
-        return (productsNames, dates, addrs);
+        return (productsNames, stageDesc, dates, addrs);
     }
 
     // função para adicionar produtos à um estágio
@@ -213,7 +217,7 @@ contract MyContract {
     // função que retorna todos os produtos de um usuário
     function getStages() public view returns (uint[] memory, uint[][] memory, string[] memory, address[] memory) {
 
-        uint[] memory ids = productsIds;
+        uint[] memory ids = stagesIds;
         uint[] memory idsStages = new uint[](ids.length);
         uint[][] memory prods = new uint[][](ids.length);
         string[] memory prods_desc = new string[](ids.length);
