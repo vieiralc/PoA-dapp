@@ -11,6 +11,8 @@ contract MyContract {
     event StageRegistered(uint[]);
     // evento para notificar o cliente de que um histórico foi registrado
     event historyRegistered(string _msg);
+    // evento para notificar o cliente de que um produto foi atualizado
+    event productUpdated(uint _productId, string _msg);
 
     // estrutura para manter dados do usuário
     struct User {
@@ -79,13 +81,26 @@ contract MyContract {
 
     // função para cadastrar um produto
     function addProduct(string memory _desc, uint _price) public {
-        require(bytes(_desc).length >= 1, "Name invalid");
+        require(bytes(_desc).length >= 1, "Invalid name");
         require(_price > 0, "Price must be higher than zero");
 
         products[lastId] = Product(lastId, _desc, _price, msg.sender);
         productsIds.push(lastId);
         lastId++;
         emit productRegistered(lastId);
+    }
+
+    function updateProduct(uint _productId, string memory _newDesc, uint _newPrice) public {
+        require(bytes(_newDesc).length >= 1, "Invalid name");
+        require(_newPrice > 0, "New price must be higher than zero");
+
+        Product storage prod = products[_productId];
+
+        require(prod.owner == msg.sender, "Only the owner can update the product");
+        prod.desc = _newDesc;
+        prod.price = _newPrice;
+
+        emit productUpdated(_productId, "Produto atualizado com successo");
     }
 
     // função para resgatar info de um produto
