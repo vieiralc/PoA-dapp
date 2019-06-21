@@ -34,8 +34,10 @@ app.use("/api/auth", authRoutes);
 // * Products pages * //
 app.get("/addProducts", products.renderAddProducts);
 app.get("/getProducts", products.renderGetProducts);
+app.get("/editProduct", products.renderEditProduct);
 
 app.post("/addProducts", products.addProducts);
+app.post("/updateProduct", products.updateProduct);
 app.get("/listProducts", products.getProducts);
 
 // * Estágios * //
