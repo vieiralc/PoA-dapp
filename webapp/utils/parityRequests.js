@@ -1,3 +1,5 @@
+const path = require('path');
+
 const allAccountsInfoRequest = { 
     "method": "parity_allAccountsInfo", 
     "params": [], 
@@ -7,7 +9,9 @@ const allAccountsInfoRequest = {
 
 const headers = { 'Content-Type': 'application/json' };
 const ownerAccount = "0x00a1103c941fc2e1ef8177e6d9cc4657643f274b";
-const contractAddress = "0x26Db9Ab19c43F1F808DA906b40014D99Ea77da27";
+const MyContractJson = require(path.resolve('../dapp/build/contracts/MyContract.json'));
+const network = MyContractJson['networks']
+const contractAddress = network['8995'].address;
 
 function newAccountRequest(name, pass) {
     let newAccountRequest = { "method": "parity_newAccountFromPhrase", "params": [name, pass], "id": 1, "jsonrpc": "2.0" };
