@@ -38,7 +38,6 @@ contract MyContract {
     // estrutura para manter dados de um histórico
     struct History {
         uint productId;
-        string productName;
         string[] stageDesc;
         string[] dates;
         address productOwner;
@@ -153,10 +152,7 @@ contract MyContract {
         require(_productId >= 0, "invalid productId");
 
         if (!isProductInHistory(_productId)) {
-            string memory productName;
-            (, productName, ,) = productInfo(_productId);
-
-            histories[historyId] = History(_productId, productName, _stageDesc, _dates, msg.sender);
+            histories[historyId] = History(_productId, _stageDesc, _dates, msg.sender);
             historiesIds.push(historyId);
             productsInHistory.push(_productId);
             historyId++;
@@ -182,12 +178,12 @@ contract MyContract {
         return false;
     }
 
-    function HistoryInfo(uint _id) public view returns (string memory, string[] memory, string[] memory, address) {
+    function HistoryInfo(uint _id) public view returns (uint, string[] memory, string[] memory, address) {
         require(_id <= historyId, "History does not exist");
 
         History memory his = histories[_id];
         return (
-            his.productName,
+            his.productId,
             his.stageDesc,
             his.dates,
             his.productOwner
@@ -197,13 +193,15 @@ contract MyContract {
     function getHistories() public view returns (string[] memory, string[][] memory, string[][] memory, address[] memory) {
         uint[] memory ids = historiesIds;
 
+        uint[] memory prodsIds = new uint[](ids.length);
         string[] memory productsNames = new string[](ids.length);
         string[][] memory stageDesc = new string[][](ids.length);
         string[][] memory dates = new string[][](ids.length);
         address[] memory addrs = new address[](ids.length);
 
         for (uint i = 0; i < ids.length; i++) {
-            (productsNames[i], stageDesc[i], dates[i], addrs[i]) = HistoryInfo(i);
+            (prodsIds[i], stageDesc[i], dates[i], addrs[i]) = HistoryInfo(i);
+            (, productsNames[i], ,) = productInfo(prodsIds[i]);
         }
 
         return (productsNames, stageDesc, dates, addrs);
