@@ -150,9 +150,11 @@ contract MyContract {
     // função para adicionar o histórico de um produto
     function addNewHistory(uint _productId, string[] memory _stageDesc, string[] memory _dates) public {
         require(_productId >= 0, "invalid productId");
+        address productOwner;
 
         if (!isProductInHistory(_productId)) {
-            histories[historyId] = History(_productId, _stageDesc, _dates, msg.sender);
+            (, , productOwner ,) = productInfo(_productId);
+            histories[historyId] = History(_productId, _stageDesc, _dates, productOwner);
             historiesIds.push(historyId);
             productsInHistory.push(_productId);
             historyId++;
