@@ -18,7 +18,7 @@ const OPTIONS = {
 
 const headers = { 'Content-Type': 'application/json' };
 const ownerAccount = "0x00a1103c941fc2e1ef8177e6d9cc4657643f274b";
-const MyContractJson = require(path.resolve('../dapp/build/contracts/MyContract.json'));
+const MyContractJson = require(path.resolve('../dapp/build/contracts/Main.json'));
 const contractAbi = MyContractJson.abi;
 const network = MyContractJson['networks']
 const contractAddress = network['8995'].address;
