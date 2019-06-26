@@ -1,66 +1,72 @@
 const web3 = require('../../utils/parityRequests').web3;
 const MyContract = require('../../utils/parityRequests').MyContract;
 
-module.exports = {
-    renderAddHistory: function(req, res) {
-        // verifica se usuario esta logado
-        if (!req.session.username) {
-            res.redirect('/api/auth');
-            res.end();
-        } else {
-            res.render('historico.html');
-        }
-    },
-    renderGetHistory: function(req, res) {
-        // verifica se usuario esta logado
-        if (!req.session.username) {
-            res.redirect('/api/auth');
-            res.end();
-        } else {
-            res.render('listaHistorico.html');
-        }
-    },
-    addHistory: async function(req, res) {
+function renderAddHistory (req, res) {
+    // verifica se usuario esta logado
+    if (!req.session.username) {
+        res.redirect('/api/auth');
+        res.end();
+    } else {
+        res.render('historico.html');
+    }
+}
 
-        if (!req.session.username) {
-            res.redirect('/');
-            res.end();
-        } else {
-            console.log("*** Apis -> products -> history: ***");
-            console.log(req.body);
-            
-            let dates = [];
-            let stages = [];
+function renderGetHistory (req, res) {
+    // verifica se usuario esta logado
+    if (!req.session.username) {
+        res.redirect('/api/auth');
+        res.end();
+    } else {
+        res.render('listaHistorico.html');
+    }
+}
 
-            const { productId, stage, date } = req.body;
-            const userAddr = req.session.address;
-            dates.push(date);
-            stages.push(stage);
-            let pass = req.session.password;
-            
-            try {
-                let accountUnlocked = await web3.eth.personal.unlockAccount(userAddr, pass, null)
-                if (accountUnlocked) {
+async function addHistory (req, res) {
 
-                    await MyContract.methods.addNewHistory(productId, stages, dates)
-                        .send({ from: userAddr, gas: 3000000 })
-                        .then(function(result) {
-                            console.log(result);
-                            return res.send({ 'error': false, 'msg': 'Histórico cadastrado com sucesso.'});  
-                        })
-                        .catch(function(err) {
-                            console.log(err);
-                            return res.send({ 'error': true, 'msg': 'Erro ao comunicar com o contrato.'});
-                        })
-                }
-            } catch(err) {
-                return res.send({ 'error': true, 'msg': 'Erro ao desbloquear sua conta. Por favor, tente novamente mais tarde.'});
+    if (!req.session.username) {
+        res.redirect('/');
+        res.end();
+    } else {
+        console.log("*** Apis -> products -> history: ***");
+        console.log(req.body);
+        
+        let dates = [];
+        let stages = [];
+
+        const { productId, stage, date } = req.body;
+        const userAddr = req.session.address;
+        dates.push(date);
+        stages.push(stage);
+        let pass = req.session.password;
+        
+        try {
+            let accountUnlocked = await web3.eth.personal.unlockAccount(userAddr, pass, null)
+            if (accountUnlocked) {
+
+                await MyContract.methods.addNewHistory(productId, stages, dates)
+                    .send({ from: userAddr, gas: 3000000 })
+                    .then(function(result) {
+                        console.log(result);
+                        return res.send({ 'error': false, 'msg': 'Histórico cadastrado com sucesso.'});  
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                        return res.send({ 'error': true, 'msg': 'Erro ao comunicar com o contrato.'});
+                    })
             }
-            
+        } catch(err) {
+            return res.send({ 'error': true, 'msg': 'Erro ao desbloquear sua conta. Por favor, tente novamente mais tarde.'});
         }
-    },
-    getHistory: async function(req, res) {
+        
+    }
+}
 
+async function getHistory (req, res) {
+
+    if (!req.session.username) {
+        res.redirect('/');
+        res.end();
+    } else {
         let userAddr = req.session.address;
         console.log("*** Getting history ***");
 
@@ -89,4 +95,11 @@ module.exports = {
                 res.send({ error: true, msg: error});
             })
     }
+}
+
+module.exports = {
+    renderAddHistory,
+    renderGetHistory,
+    addHistory,
+    getHistory
 }
