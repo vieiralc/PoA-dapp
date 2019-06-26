@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-contract MyContract {
+import './User.sol';
 
-    // evento para notificar o cliente que a conta foi atualizada
-    event userRegisted(address _addr, string newEmail);
+contract Main is User {
+
     // evento para notificar o cliente que o produto foi registrado
     event productRegistered(uint id);
     // evento para notificar o cliente de que a Etapa foi registrada
@@ -13,11 +13,6 @@ contract MyContract {
     event historyRegistered(string _msg);
     // evento para notificar o cliente de que um produto foi atualizado
     event productUpdated(uint _productId, string _msg);
-
-    // estrutura para manter dados do usuário
-    struct User {
-        string email;
-    }
 
     // estrutura para registar o estagio de um produto
     struct Stage {
@@ -55,28 +50,10 @@ contract MyContract {
     uint[] public historiesIds;
     uint[] public productsInHistory;
 
-    // mapeia endereço do usuário a sua estrutura
-    mapping (address => User) users;
-
     // state variables
     uint256 private lastId = 0;
     uint256 private stagesId = 0;
     uint256 private historyId = 0;
-
-    // função para cadastrar conta do usuário
-    function setUser(address _addr, string memory _email) public {
-        User storage user = users[_addr];
-        user.email = _email;
-
-        // notifica o cliente através do evento
-        emit userRegisted(_addr, "Conta registrada!");
-    }
-
-    // função para resgatar dados do usuário
-    function getUser(address _addr) public view returns(string memory) {
-        User memory user = users[_addr];
-        return (user.email);
-    }
 
     // função para cadastrar um produto
     function addProduct(string memory _desc, uint _price) public {
