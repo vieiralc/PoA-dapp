@@ -1,5 +1,7 @@
-let MyContract = artifacts.require("./MyContract.sol");
+const Main = artifacts.require("./Main.sol");
+const User = artifacts.require("./User.sol");
 
-module.exports = function(deployer) {
-  deployer.deploy(MyContract);
-};
+module.exports = deployer => {
+  deployer.deploy(Main)
+  deployer.deploy(User)
+}
