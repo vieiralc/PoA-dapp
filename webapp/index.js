@@ -3,9 +3,12 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 
-const products = require("./apis/products/products.js");
-const stages = require("./apis/products/stages");
-const history = require("./apis/products/history.js");
+const PORT = process.env.PORT || 3000;
+
+const authRoutes = require('./apis/routes//auth');
+const productsRoutes = require('./apis/routes/products');
+const historyRoutes = require('./apis/routes/history');
+const stagesRoutes = require('./apis/routes/stages');
 
 // set default views folder
 app.set('views', __dirname + "/views");
@@ -22,8 +25,6 @@ app.use(session({
     resave: false
 }));
 
-const authRoutes = require('./apis/routes/auth.js');
-
 app.get('/', (req, res) => {
     res.redirect('/api/auth');
 });
@@ -32,29 +33,13 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoutes);
 
 // * Products pages * //
-app.get("/addProducts", products.renderAddProducts);
-app.get("/getProducts", products.renderGetProducts);
-app.get("/editProduct", products.renderEditProduct);
-
-app.post("/addProducts", products.addProducts);
-app.post("/updateProduct", products.updateProduct);
-app.get("/listProducts", products.getProducts);
+app.use(productsRoutes);
 
 // * Estágios * //
-app.get("/addStage", stages.renderAddStage);
-app.get("/getStages", stages.renderGetStages);
-
-app.post("/addStage", stages.addStage);
-app.get("/listStages", stages.listStages);
+app.use(stagesRoutes);
 
 // * History * //
-app.get("/addHistory", history.renderAddHistory);
-app.post("/addHistory", history.addHistory);
-
-app.get("/getHistory", history.getHistory);
-app.get("/listHistory", history.renderGetHistory);
-
-const PORT = process.env.PORT || 3000;
+app.use(historyRoutes);
 
 app.listen(PORT, function() {
     console.log(`App listening on port ${PORT}`);
