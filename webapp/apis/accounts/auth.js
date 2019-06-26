@@ -1,24 +1,11 @@
-const Web3 = require("web3");
 const axios = require("axios");
 const lodash = require("lodash");
-const path = require("path");
-
-const allAccountsInfo = require('../../utils/parityRequests').allAccountsInfoRequest;
+const web3 = require('../../utils/parityRequests').web3;
+const MyContract = require('../../utils/parityRequests').MyContract;
 const httpEndpoint = require('../../utils/nodesEndPoints').node00Endpoint;
 const parityRequest = require('../../utils/parityRequests');
 const headers = require('../../utils/parityRequests').headers;
-const contractAddress = require('../../utils/parityRequests').contractAddress;
 
-const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
-
-const OPTIONS = {
-    defaultBlock: "latest",
-    transactionConfirmationBlocks: 1,
-    transactionBlockTimeout: 5
-};
-
-const web3 = new Web3(httpEndpoint, null, OPTIONS);
-let MyContract = new web3.eth.Contract(product_abi.abi, contractAddress);
 
 function renderIndex(req, res) {
     if (req.session.username) {
@@ -132,7 +119,7 @@ async function login(req, res) {
     
     // envia requisão ao parity e cria um array de contas
     let accounts = [];
-    await axios.post(httpEndpoint, allAccountsInfo, { headers })
+    await axios.post(httpEndpoint, parityRequest.allAccountsInfoRequest, { headers })
         .then(function(response) {
             lodash.forEach(response.data.result, function (value, key) {
                 accounts.push({ userName: value.name, userAddr: key })

@@ -1,20 +1,5 @@
-const path = require('path');
-const Web3 = require("web3");
-
-const product_abi = require(path.resolve("../dapp/build/contracts/MyContract.json"));
-const httpEndpoint = 'http://localhost:8540';
-
-let contractAddress = require('../../utils/parityRequests').contractAddress;
-
-const OPTIONS = {
-    defaultBlock: "latest",
-    transactionConfirmationBlocks: 1,
-    transactionBlockTimeout: 5
-};
-
-let web3 = new Web3(httpEndpoint, null, OPTIONS);
-
-let MyContract = new web3.eth.Contract(product_abi.abi, contractAddress);
+const web3 = require('../../utils/parityRequests').web3;
+const MyContract = require('../../utils/parityRequests').MyContract; 
 
 module.exports = {
     renderAddProducts: function(req, res) {
